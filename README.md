@@ -94,3 +94,48 @@ Python 3.6.8 (default, Apr 12 2022, 06:55:39)
 Type "help", "copyright", "credits" or "license" for more information.
 
 ```
+
+## 3. EasyBuild
+
+1. Installing EasyBuild with EasyBuild.
+
+See [Installing EasyBuild with EasyBuild](https://docs.easybuild.io/en/latest/Installation.html#installing-easybuild-with-easybuild "Installing EasyBuild with EasyBuild")
+
+2. Use python 3.9.15
+
+python 3.10 does not work.
+
+*The Tcl-based or Lmod implementations of environment modules do their default sorting differently. The former will normally sort in the lexicographic order, while Lmod follows an approach that is closer to Python’s construct LooseVersion way of ordering. Such aspects may make a big difference, if you have installed both versions 1.9.0 and 1.15.2, with respect to what is the version being loaded by default.*
+```bash
+eb --install-latest-eb-release --prefix /opt/apps/easybuild
+...
+Badabum!
+sanity check command eb --version exited with code 1 (output: ERROR: No compatible 'python' command found via $PATH (EasyBuild requires Python 2.6+ or 3.5+)
+```
+
+### Install python 3.9.15 module
+See the previous section. Replace 3.10.8 to 3.9.15
+
+### Step 1: Installing EasyBuild into a temporary location
+```bash
+ml load python3/3.9.15
+export EB_TMPDIR=/tmp/$USER/eb_tmp
+python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild
+export PATH=$EB_TMPDIR/bin:$PATH
+export PYTHONPATH=$(/bin/ls -rtd -1 $EB_TMPDIR/lib*/python*/site-packages | tail -1):$PYTHONPATH
+export EB_PYTHON=python3
+```
+
+### Step 2: Using EasyBuild to install EasyBuild
+```bash
+eb --install-latest-eb-release --prefix /opt/apps/easybuild
+```
+
+### Step 3: Loading the EasyBuild module
+```bash
+module use /opt/apps/easybuild/modules/all
+ml avail
+ml load EasyBuild
+eb --version
+This is EasyBuild 4.6.1 (framework: 4.6.1, easyblocks: 4.6.1) on host localhost.localdomain.
+```
